@@ -1,10 +1,13 @@
 from rauth.service import OAuth1Service
-import requests, httplib, hashlib, urllib, time, sys, os
+import requests, httplib, httplib2, hashlib, urllib, time, sys, os
 import ConfigParser
 
 class SmugMug(object):
 	smugmug_api_uri = 'https://api.smugmug.com/services/api/json/1.3.0/'
 	smugmug_upload_uri = 'http://upload.smugmug.com/'
+	smugmug_request_token_uri = 'https://api.smugmug.com/services/oauth/getRequestToken.mg'
+	smugmug_access_token_uri = 'https://api.smugmug.com/services/oauth/getAccessToken.mg'
+	smugmug_authorize_uri = 'https://api.smugmug.com/services/oauth/authorize.mg'
 	smugmug_api_version = '1.3.0'
 	smugmug_config = 'smugmug.cfg'
 	
@@ -19,6 +22,10 @@ class SmugMug(object):
 
 
 	def __init__(self, verbose = False):
+		"""Constructor. 
+		Loads the config file and initialises the smugmug service
+		"""
+
 		self.verbose = verbose
 		
 		config_parser = ConfigParser.RawConfigParser()
@@ -29,25 +36,26 @@ class SmugMug(object):
 			self.access_token = config_parser.get('SMUGMUG','access_token')
 			self.access_token_secret = config_parser.get('SMUGMUG','access_token_secret')
 		except:
-			print "Config file is missing. Run 'python smugmug.py'"
-			raise
+			raise Exception("Config file is missing or corrupted. Run 'python smugmug.py'")
 
 		self.smugmug_service = OAuth1Service(
 			name='smugmug',
 			consumer_key=self.consumer_key,
 			consumer_secret=self.consumer_secret,
-			request_token_url='https://api.smugmug.com/services/oauth/getRequestToken.mg',
-			access_token_url='https://api.smugmug.com/services/oauth/getAccessToken.mg',
-			authorize_url='https://api.smugmug.com/services/oauth/authorize.mg')
+			request_token_url=self.smugmug_request_token_uri,
+			access_token_url=self.smugmug_access_token_uri,
+			authorize_url=self.smugmug_authorize_uri)
 
 
 	def get_authorize_url(self):
+		"""Returns the URL for OAuth authorisation"""
 		self.request_token, self.request_token_secret = self.smugmug_service.get_request_token(method='GET')
 		authorize_url = self.smugmug_service.get_authorize_url(self.request_token, Access='Full', Permissions='Add')
 		return authorize_url
 
 
 	def get_access_token(self):
+		"""Gets the access token from SmugMug"""
 		response = self.smugmug_service.get_access_token('POST',
                                     request_token=self.request_token,
                                     request_token_secret=self.request_token_secret)
@@ -57,10 +65,11 @@ class SmugMug(object):
 		return self.access_token, self.access_token_secret
 
 	def request_once(self, method, url, params={}, headers={}, files={}, data=None, header_auth=False):
+		"""Performs a single request"""
 		if self.verbose == True:
 			print 'REQUEST:\nmethod='+method+'\nurl='+url+'\nparams='+str(params)+'\nheaders='+str(headers)
 		response = self.smugmug_service.request(method=method,
-						url=url,
+						uri=url,
 						params=params,
 						headers=headers,
 						files=files,
@@ -74,6 +83,7 @@ class SmugMug(object):
 
 
 	def request(self, method, url, params={}, headers={}, files={}, data=None, header_auth=False, retries=5, sleep=5):
+		"""Performs requests, with multiple attempts if needed"""
 		retry_count=retries
 		while retry_count > 0:
 			try:
@@ -101,17 +111,19 @@ class SmugMug(object):
 		return albums
 
 	def get_album_id(self, album_name):
+		"""Get album id"""
 		album_id = None
 		response = self.request('GET', self.smugmug_api_uri, params={'method':'smugmug.albums.get'})
 
 		for album in response.content['Albums'] :
-			if album['Title'] == album_name.decode('utf-8'):
+			if album['Title'] == album_name:
 				album_id = album['id']
 				break
 		return album_id
 
 
 	def get_album_key(self, album_id):
+		"""Get album key"""
 		album_key = None
 		response = self.request('GET', self.smugmug_api_uri, params={'method':'smugmug.albums.get'})
 
@@ -123,6 +135,7 @@ class SmugMug(object):
 
 
 	def get_album_images(self, album_id):
+		"""Get list of file names in an album"""
 		album_key = self.get_album_key(album_id)
 		images = []
 		response = self.request('GET', self.smugmug_api_uri,
@@ -133,6 +146,7 @@ class SmugMug(object):
 
 
 	def get_album_images_info(self, album_id):
+		"""Get a information for all images in an album"""
 		album_key = self.get_album_key(album_id)
 		images = []
 		response = self.request('GET', self.smugmug_api_uri,
@@ -143,8 +157,13 @@ class SmugMug(object):
 
 
 	def create_album(self, album_name, password = None, category_id = None, template_id = None):
-		params = {'method':'smugmug.albums.create', 'Title':album_name, 'CategoryID':category_id, 'AlbumTemplateID':template_id, 'Originals' : '1', 'Filenames' : '1'}
-
+		"""Create a new album"""
+		params = {'method':'smugmug.albums.create', 'Title':album_name, 'Originals' : '1', 'Filenames' : '1'}
+	
+		if category_id != None:
+			params['CategoryID'] = category_id
+		if template_id != None:
+			params['AlbumTemplateID'] = template_id
 		if password != None:
 			params['Password'] = password
 
@@ -155,6 +174,7 @@ class SmugMug(object):
 
 	
 	def get_album_info(self, album_id):
+		"""Get info for an album"""
 		info = dict()
 		album_key = self.get_album_key(album_id)
 		response = self.request('GET', self.smugmug_api_uri, params={'method':'smugmug.albums.getInfo', 'AlbumID':album_id, 'AlbumKey':album_key})
@@ -176,6 +196,7 @@ class SmugMug(object):
 		return categories
 
 	def get_category_id(self, category_name):
+		"""Get category id"""
 		category_id = None
 		response = self.request('GET', self.smugmug_api_uri,
 				params={'method':'smugmug.categories.get'})
@@ -199,6 +220,7 @@ class SmugMug(object):
 
 
 	def get_template_id(self, template_name):
+		"""Get template id"""
 		template_id = None
 		response = self.request('GET', self.smugmug_api_uri,
 				params={'method':'smugmug.albumtemplates.get'})
@@ -213,6 +235,7 @@ class SmugMug(object):
 	## Image
 
 	def upload_image(self, image_data, image_name, image_type, album_id):
+		"""Upload an image"""
 		response = self.request('POST', self.smugmug_upload_uri,
 			data=image_data,
 			header_auth = True,
@@ -227,8 +250,10 @@ class SmugMug(object):
 
 
 	def download_image(self, image_info, image_path, retries=5):
+		"""Download an image"""
 		count = retries
 		image_url = image_info['original_url']
+		image_url = httplib2.iri2uri(image_url)
 		image_path_temp = image_path + "_temp"
 		while count > 0:
 			count -= 1
@@ -240,9 +265,9 @@ class SmugMug(object):
 			image_md5sum = hashlib.md5(image_data).hexdigest()
 			image_size = str(len(image_data))
 			if image_md5sum != image_info['md5_sum']:
-				print "MD5 sum doesn't match."
+				raise "MD5 sum doesn't match."
 			elif image_size != str(image_info['size']):
-				print "Image size doesn't match."
+				raise "Image size doesn't match."
 			else:
 				os.rename(image_path_temp, image_path)
 				break
@@ -250,17 +275,17 @@ class SmugMug(object):
 			if count > 0:
 				print "Retrying..."
 			else:
-				print "Error: Too many retries."
+				raise "Error: Too many retries."
 				sys.exit(1)
 
 	@staticmethod
 	def load_image(image_path):
+		"""Load the image data from a path"""
 		try:
 			image_data = open(image_path, 'rb').read()
 			return image_data
 		except IOError as e:
-			print "I/O error({0}): {1}".format(e.errno, e.strerror)
-			raise
+			raise "I/O error({0}): {1}".format(e.errno, e.strerror)
 		return None
 
 

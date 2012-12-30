@@ -82,15 +82,13 @@ class TestSmugMug(unittest.TestCase):
 
 		# Dowloading the image
 		image_path2 = 'sampleimage2.jpg'
-		image_url2 = images_info[0]['original_url']
-		smugmug.download_image(image_url = image_url2, image_path = image_path2)
+		smugmug.download_image(image_info = images_info[0], image_path = image_path2)
 
 		# Checking that the new image is same as the old one
 		try:
 			image_data2 = open(image_path2, 'rb').read()
 		except IOError as e:
-			print "I/O error({0}): {1}".format(e.errno, e.strerror)
-			raise
+			raise "I/O error({0}): {1}".format(e.errno, e.strerror)
 		self.assertTrue(image_data == image_data2)
 		
 
