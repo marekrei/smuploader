@@ -46,6 +46,12 @@ class SmugMug(object):
 			access_token_url=self.smugmug_access_token_uri,
 			authorize_url=self.smugmug_authorize_uri)
 
+	@staticmethod
+	def decode(obj, encoding='utf-8'):
+		if isinstance(obj, basestring):
+			if not isinstance(obj, unicode):
+				obj = unicode(obj, encoding)
+		return obj
 
 	def get_authorize_url(self):
 		"""Returns the URL for OAuth authorisation"""
@@ -112,11 +118,14 @@ class SmugMug(object):
 
 	def get_album_id(self, album_name):
 		"""Get album id"""
+		if album_name == None:
+			raise Exception("Album name cannot be None")
+
 		album_id = None
 		response = self.request('GET', self.smugmug_api_uri, params={'method':'smugmug.albums.get'})
 
 		for album in response.content['Albums'] :
-			if album['Title'] == album_name:
+			if SmugMug.decode(album['Title']) == SmugMug.decode(album_name):
 				album_id = album['id']
 				break
 		return album_id
@@ -124,6 +133,9 @@ class SmugMug(object):
 
 	def get_album_key(self, album_id):
 		"""Get album key"""
+		if album_id == None:
+			raise Exception("Album ID cannot be None")
+
 		album_key = None
 		response = self.request('GET', self.smugmug_api_uri, params={'method':'smugmug.albums.get'})
 
@@ -136,6 +148,8 @@ class SmugMug(object):
 
 	def get_album_images(self, album_id):
 		"""Get list of file names in an album"""
+		if album_id == None:
+			raise Exception("Album ID cannot be None")
 		album_key = self.get_album_key(album_id)
 		images = []
 		response = self.request('GET', self.smugmug_api_uri,
@@ -147,6 +161,8 @@ class SmugMug(object):
 
 	def get_album_images_info(self, album_id):
 		"""Get a information for all images in an album"""
+		if album_id == None:
+			raise Exception("Album ID cannot be None")
 		album_key = self.get_album_key(album_id)
 		images = []
 		response = self.request('GET', self.smugmug_api_uri,

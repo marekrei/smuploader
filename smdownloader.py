@@ -48,7 +48,7 @@ def download_album(album_name, path, resume = False, verbose = False):
 			if resume == True:
 				print "Already exists. Skipping."
 			else:
-				print "Error: File already exists and resuming is not enables."
+				raise Exception("Error: File already exists and resuming is not enables.")
 		else:
 			smugmug.download_image(image_info = image_info, image_path = image_path)
 			print "Done"
