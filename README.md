@@ -12,9 +12,9 @@ The following python modules need to be installed:
 * requests [http://docs.python-requests.org]
 * rauth [https://github.com/litl/rauth]
 
-The **rauth** python library, which is used for authentication, relies on the **requests** library. At the time of writing this, the rauth library is not compatible with the latest version of requests (>= 1.0.0), although they are working on fixing that. To use the script, install an earlier version of requests, for example:
+You can install them using
 
-	pip install 'requests<0.20'
+	pip install rauth
 
 
 Files
@@ -35,7 +35,7 @@ You first need to configure the script, by running the following command and fol
 
 After setup, you can run the following command to check if everything is working. It creates a new album into your smugmug account, uploads a sample image, and downloads it back again.
 
-	python smugmug_test.py
+	python test.py
 
 Now you can start uploading. As input, you can give either images or directories. For example, upload a single image to a new gallery:
 
@@ -48,6 +48,10 @@ Upload all images in the same dir to an album:
 Upload a whole directory, and set the album name from the dir name:
 
 	python smuploader.py path/to/album/
+	
+Upload a directory, set password to "pass" and category to "Photos":
+
+	python smuploader.py -p pass -c Photos path/to/album/
 
 Upload multiple directories, and set album names for directory names:
 
@@ -77,4 +81,4 @@ This software is distributed under the GNU Affero General Public License version
 
 You should have received a copy of the GNU Affero General Public License along with this program. If not, see http://www.gnu.org/licenses/.
 
-Copyright (c) 2012, Marek Rei (marek@marekrei.com)
+Copyright (c) 2014, Marek Rei (marek@marekrei.com)
