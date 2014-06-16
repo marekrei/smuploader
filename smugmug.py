@@ -309,7 +309,7 @@ class SmugMug(object):
 if __name__ == '__main__':
 	print "# Welcome! "
 	print "# We are going to go through some steps to set up this SmugMug photo manager and make it connect to the API."
-	print "# Step 1: Go to http://wiki.smugmug.net/display/API and apply for an API key. 
+	print "# Step 1: Go to http://wiki.smugmug.net/display/API and apply for an API key."
 	print "# This gives you unique identifiers for connecting to SmugMug."
 	print "# When done, you can find the API keys in your SmugMug profile."
 	print "# Profile->Discovery->Api Keys"
