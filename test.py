@@ -55,7 +55,7 @@ class TestSmugMug(unittest.TestCase):
 		self.assertTrue(album_info['album_id'] == album_id)
 		self.assertTrue(album_info['category_id'] == category_id)
 		self.assertTrue(album_info['category_name'] == category_name)
-		self.assertTrue(album_info['password'] == password)
+		## self.assertTrue(album_info['password'] == password) ## Apparently password is not returned by the request any more
 
 		# Let's load the sample photo
 		image_path = 'sampleimage.jpg'

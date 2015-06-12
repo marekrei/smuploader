@@ -199,7 +199,7 @@ class SmugMug(object):
 		info['album_name'] = response['Album']['Title']
 		info['category_id'] = response['Album']['Category']['id']
 		info['category_name'] = response['Album']['Category']['Name']
-		info['password'] = response['Album']['Password']
+		## info['password'] = response['Album']['Password'] ## Apparently password is not in the response any more
 		return info
 
 	## Category
@@ -309,10 +309,10 @@ class SmugMug(object):
 if __name__ == '__main__':
 	print "# Welcome! "
 	print "# We are going to go through some steps to set up this SmugMug photo manager and make it connect to the API."
-	print "# Step 1: Go to http://wiki.smugmug.net/display/API and apply for an API key."
+	print "# Step 1: Go to https://api.smugmug.com/api/developer/apply and apply for an API key."
 	print "# This gives you unique identifiers for connecting to SmugMug."
 	print "# When done, you can find the API keys in your SmugMug profile."
-	print "# Profile->Discovery->Api Keys"
+	print "# Account Settings -> Me -> API Keys"
 	print "# Enter them here and they will be saved to the config file (" + SmugMug.smugmug_config + ") for later use."
 	consumer_key = raw_input("Key: ")
 	consumer_secret = raw_input("Secret: ")
@@ -328,7 +328,7 @@ if __name__ == '__main__':
 
 	smugmug = SmugMug()
 	authorize_url = smugmug.get_authorize_url()
-	print "# Step 2: Visit this address in your browser and authenticate your new keys to access your SmugMug account: " + authorize_url
+	print "# Step 2: Visit this address in your browser to authenticate your new keys for access your SmugMug account: " + authorize_url
 	raw_input("Press ENTER when you're finished: ")
 
 	access_token, access_token_secret = smugmug.get_access_token()
