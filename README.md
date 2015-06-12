@@ -1,7 +1,7 @@
 Smuploader
 ===========
 
-This script is for uploading / downloading images from smugmug.com. It uses OAuth for authentication.
+This script is for uploading / downloading images from smugmug.com, using your command line. It uses OAuth for authentication.
 
 
 Requirements
@@ -29,25 +29,25 @@ Files
 Usage
 -----
 
-You first need to configure the script, by running the following command and following instructions:
+You first need to configure the script, by running the following command and following instructions. It will instruct you to generate a personal API access key.
 
 	python smugmug.py
 
-After setup, you can run the following command to check if everything is working. It creates a new album into your smugmug account, uploads a sample image, and downloads it back again.
+After setup, you can run the following command to check if everything is working. It creates a new album into your smugmug account, uploads a sample image, and downloads it back again. The script will show a lot of verbose output, and should conclude with OK or FAILED.
 
 	python test.py
 
-Now you can start uploading. As input, you can give either images or directories. For example, upload a single image to a new gallery:
+Now you can start uploading. As input, you can give either images or directories. For example, upload a single image to a new album:
 
 	python smuploader.py -a AlbumName path/to/image.jpg
 
-Upload all images in the same dir to an album:
-
-	python smuploader.py -a AlbumName path/to/album/*
-
-Upload a whole directory, and set the album name from the dir name:
+Upload a whole directory as an album:
 
 	python smuploader.py path/to/album/
+
+Upload a whole directory, and manually set a new album name:
+
+	python smuploader.py -a AlbumName path/to/album/*
 	
 Upload a directory, set password to "pass" and category to "Photos":
 
@@ -77,8 +77,25 @@ Finally, you can also download all the albums in your account:
 Copyright and License
 ---------------------
 
-This software is distributed under the GNU Affero General Public License version 3. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. The authors are not responsible for how it performs (or doesn't). See the GNU Affero General Public License for more details.
+This software is distributed under The MIT License (MIT)
 
-You should have received a copy of the GNU Affero General Public License along with this program. If not, see http://www.gnu.org/licenses/.
+Copyright (c) 2015 Marek Rei
 
-Copyright (c) 2014, Marek Rei (marek@marekrei.com)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
