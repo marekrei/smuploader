@@ -201,7 +201,7 @@ class SmugMug(object):
 
 
     def create_nice_name(self, name):
-        return "-".join([re.sub(r'[\W]+', '', x) for x in name.strip().split()]).title()
+        return "-".join([re.sub(r'[\W_]+', '', x) for x in name.strip().split()]).title()
 
     def create_album(self, album_name, password = None, folder_id = None, template_id = None):
         """
@@ -217,6 +217,9 @@ class SmugMug(object):
             response = self.request('POST', self.smugmug_api_base_url + "/folder/user/"+self.username+("/"+folder_id if folder_id != None else "")+"!albumfromalbumtemplate", data=json.dumps(data), headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
         else:
             response = self.request('POST', self.smugmug_api_base_url + "/folder/user/"+self.username + ("/"+folder_id if folder_id != None else "") + "!albums", data=json.dumps(data), headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+
+        if self.verbose == True:
+            print json.dumps(response)
 
         return response
 
