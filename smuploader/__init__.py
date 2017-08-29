@@ -1,0 +1,1 @@
+from .smugmug import SmugMug

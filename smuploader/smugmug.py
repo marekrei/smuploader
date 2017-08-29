@@ -19,7 +19,9 @@ class SmugMug(object):
     smugmug_access_token_uri = 'http://api.smugmug.com/services/oauth/1.0a/getAccessToken'
     smugmug_authorize_uri = 'http://api.smugmug.com/services/oauth/1.0a/authorize'
     smugmug_api_version = 'v2'
-    smugmug_config = 'smugmug.cfg'
+
+    # put config in home dir under ~/.smugmug.cfg. TODO: make this a variable?
+    smugmug_config = os.path.join(os.path.expanduser("~"), '.smugmug.cfg')
 
 
     def __init__(self, verbose = False):
