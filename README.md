@@ -88,6 +88,13 @@ Finally, you can also download all the albums in your account:
 
 	smdownloader --getall path/to/destination/
 
+PyPi Details
+------------
+Packaging and uploading:
+
+	python setup.py sdist upload
+	
+Don't forget to inc the version in setup.py!
 
 Copyright and License
 ---------------------
