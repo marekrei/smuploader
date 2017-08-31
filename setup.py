@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='smuploader',
-      version='0.3',
+      version='0.3.2',
       description='A SmugMug uploader and downloader. Uses SmugMug API v2.0',
       url='http://github.com/marekrei/smuploader',
       author='Marek Rei, Erik Selberg',

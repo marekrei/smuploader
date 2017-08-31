@@ -92,7 +92,13 @@ PyPi Details
 ------------
 Packaging and uploading:
 
-	python setup.py sdist upload
+Use twine (not python setup.py):
+	
+	pip install twine
+	
+	python setup.py sdist bdist_wheel
+	
+	twine upload dist/* --skip-existing
 	
 Don't forget to inc the version in setup.py!
 
