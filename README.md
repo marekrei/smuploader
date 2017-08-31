@@ -22,7 +22,7 @@ You can install this as:
 	
 or locally:
 
-    git clone https://github.com/speedenator/smuploader.git
+    git clone https://github.com/marekrei/smuploader.git
 	cd smuploader
 	pip install .
 	
