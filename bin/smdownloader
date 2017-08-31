@@ -1,4 +1,6 @@
-from smugmug import SmugMug
+#!/usr/bin/env python
+
+from smuploader import SmugMug
 import argparse, sys, os, hashlib
 
 def download_album(album_name, path, resume = False, verbose = False):

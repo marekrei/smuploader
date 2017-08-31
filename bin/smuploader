@@ -1,4 +1,6 @@
-from smugmug import SmugMug
+#!/usr/bin/env python
+
+from smuploader import SmugMug
 import argparse, sys, os, mimetypes
 
 def upload_images(album_name, folder_name, template_name, password, resume, verbose, image_paths):

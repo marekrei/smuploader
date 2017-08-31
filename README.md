@@ -16,63 +16,85 @@ You can install them using
 
 	pip install rauth
 
+You can install this as:
+    
+	pip install smuploader
+	
+or locally:
+
+    git clone https://github.com/speedenator/smuploader.git
+	cd smuploader
+	pip install .
+	
+If you are planning on working on this files, you might want to instal
+via symlink:
+
+    pip install -e .
+
 
 Files
 -----
 
 * smugmug.py - The core library for communicating with SmugMug
-* smuploader.py - Tool for uploading images to your account
-* smdownloader.py - Tool for dowloading images from your account
-* test.py - Test the library
-
+* smregister - Tool for registering your credentials with SmugMug
+* smuploader - Tool for uploading images to your account
+* smdownloader - Tool for dowloading images from your account
+* smregtest - Test the library
 
 Usage
 -----
 
 You first need to configure the script, by running the following command and following instructions. It will instruct you to generate a personal API access key.
 
-	python smugmug.py
+	smregister
 
 After setup, you can run the following command to check if everything is working. It creates a new album into your smugmug account, uploads a sample image, and downloads it back again. The script will show a lot of verbose output, and should conclude with OK or FAILED.
 
-	python test.py
+	smregtest
 
 Now you can start uploading. As input, you can give either images or directories. For example, upload a single image to a new album:
 
-	python smuploader.py -a AlbumName path/to/image.jpg
+	smuploader -a AlbumName path/to/image.jpg
 
 Upload a whole directory as an album:
 
-	python smuploader.py path/to/album/
+	smuploader path/to/album/
 
 Upload a whole directory, and manually set a new album name:
 
-	python smuploader.py -a AlbumName path/to/album/*
+	smuploader -a AlbumName path/to/album/*
 	
 Upload a directory, set password to "pass" and category to "Photos":
 
-	python smuploader.py -p pass -c Photos path/to/album/
+	smuploader -p pass -c Photos path/to/album/
 
 Upload multiple directories, and set album names for directory names:
 
-	python smuploader.py path/to/multiple/albums/*
+	smuploader path/to/multiple/albums/*
 
 Use the --help argument to get the list of all options, such as setting the password, template and category:
 
-	python smuploader.py --help
+	smuploader --help
 
 You can also download an album from smugmug to your local machine:
 
-	python smdownloader.py -a AlbumName path/to/destination/
+	smdownloader -a AlbumName path/to/destination/
 
 Use quotes if the album name contains spaces:
 
-	python smdownloader.py -a 'My Long Album Name' path/to/destination/
+	smdownloader -a 'My Long Album Name' path/to/destination/
 
 Finally, you can also download all the albums in your account:
 
-	python smdownloader.py --getall path/to/destination/
+	smdownloader --getall path/to/destination/
 
+PyPi Details
+------------
+Packaging and uploading:
+
+	python setup.py sdist upload
+	
+Don't forget to inc the version in setup.py!
 
 Copyright and License
 ---------------------
