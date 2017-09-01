@@ -22,7 +22,7 @@ You can install this as:
 	
 or locally:
 
-    git clone https://github.com/speedenator/smuploader.git
+    git clone https://github.com/marekrei/smuploader.git
 	cd smuploader
 	pip install .
 	
@@ -92,7 +92,13 @@ PyPi Details
 ------------
 Packaging and uploading:
 
-	python setup.py sdist upload
+Use twine (not python setup.py):
+	
+	pip install twine
+	
+	python setup.py sdist bdist_wheel
+	
+	twine upload dist/* --skip-existing
 	
 Don't forget to inc the version in setup.py!
 
