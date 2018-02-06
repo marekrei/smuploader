@@ -43,7 +43,7 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
     # Uploading the images
     total = len(image_paths)
     count = 0
-    album_images = smugmug.get_album_images(album_id)
+    album_image_names = smugmug.get_album_image_names(album_id)
 
     for image_path in image_paths:
         if verbose == True:
@@ -54,7 +54,7 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
         sys.stdout.flush()
         if verbose == True:
             print ''
-        if image_name in album_images:
+        if image_name in album_image_names:
             print 'File already exists, skipping.'
             sys.stdout.flush()
         else:

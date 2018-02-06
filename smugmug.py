@@ -177,7 +177,7 @@ class SmugMug(object):
             response = self.request('GET', self.smugmug_api_base_url + "/album/"+album_id+"!images", params=params, headers={'Accept': 'application/json'})
 
             for image in (response['Response']['AlbumImage'] if 'AlbumImage' in response['Response'] else []):
-                images.append({"ImageKey": image['ImageKey'], "Uri": image["Uri"], "FileName": image["FileName"], "ArchivedMD5": image["ArchivedMD5"], "OriginalSize": image["OriginalSize"]})
+                images.append({"ImageKey": image['ImageKey'], "Uri": image["Uri"], "FileName": image["FileName"], "ArchivedMD5": image["ArchivedMD5"], "OriginalSize": (image["OriginalSize"] if "OriginalSize" in image else None)})
 
             if 'NextPage' in response['Response']['Pages']:
                 start += stepsize
@@ -339,7 +339,7 @@ class SmugMug(object):
             image_size = str(len(image_data_local))
             if image_md5sum != image_info['ArchivedMD5']:
                 raise Exception("MD5 sum doesn't match.")
-            elif image_size != str(image_info['OriginalSize']):
+            elif image_info['OriginalSize'] is not None and image_size != str(image_info['OriginalSize']):
                 raise Exception("Image size doesn't match.")
             else:
                 os.rename(image_path_temp, image_path)
