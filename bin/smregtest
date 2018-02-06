@@ -1,6 +1,8 @@
+#!/usr/bin/env python
+
 import random
 import unittest, os, mimetypes, urllib, time
-from smugmug import SmugMug
+from smuploader import SmugMug
 
 class TestSmugMug(unittest.TestCase):
 

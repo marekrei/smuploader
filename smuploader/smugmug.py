@@ -19,7 +19,9 @@ class SmugMug(object):
     smugmug_access_token_uri = 'http://api.smugmug.com/services/oauth/1.0a/getAccessToken'
     smugmug_authorize_uri = 'http://api.smugmug.com/services/oauth/1.0a/authorize'
     smugmug_api_version = 'v2'
-    smugmug_config = 'smugmug.cfg'
+
+    # put config in home dir under ~/.smugmug.cfg. TODO: make this a variable?
+    smugmug_config = os.path.join(os.path.expanduser("~"), '.smugmug.cfg')
 
 
     def __init__(self, verbose = False):
@@ -201,7 +203,7 @@ class SmugMug(object):
 
 
     def create_nice_name(self, name):
-        return "-".join([re.sub(r'[\W]+', '', x) for x in name.strip().split()]).title()
+        return "-".join([re.sub(r'[\W_]+', '', x) for x in name.strip().split()]).title()
 
     def create_album(self, album_name, password = None, folder_id = None, template_id = None):
         """
@@ -217,6 +219,9 @@ class SmugMug(object):
             response = self.request('POST', self.smugmug_api_base_url + "/folder/user/"+self.username+("/"+folder_id if folder_id != None else "")+"!albumfromalbumtemplate", data=json.dumps(data), headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
         else:
             response = self.request('POST', self.smugmug_api_base_url + "/folder/user/"+self.username + ("/"+folder_id if folder_id != None else "") + "!albums", data=json.dumps(data), headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
+
+        if self.verbose == True:
+            print json.dumps(response)
 
         return response
 
@@ -365,40 +370,3 @@ class SmugMug(object):
         return None
 
 
-def write_config(configfile, params):
-    config = ConfigParser.SafeConfigParser()
-    config.add_section('SMUGMUG')
-    for key, value in params:
-        config.set('SMUGMUG', key, value)
-    with open(SmugMug.smugmug_config, 'wb') as f:
-        config.write(f)
-
-
-if __name__ == '__main__':
-    print("\n\n\n#######################################################")
-    print("## Welcome! ")
-    print("## We are going to go through some steps to set up this SmugMug photo manager and make it connect to the API.")
-    print("## Step 1: What is your SmugMug username?")
-    username = raw_input("Username: ")
-
-    print("## Step 2: Go to https://api.smugmug.com/api/developer/apply and apply for an API key.")
-    print("## This gives you unique identifiers for connecting to SmugMug.")
-    print("## When done, you can find the API keys in your SmugMug profile.")
-    print("## Account Settings -> Me -> API Keys")
-    print("## Enter them here and they will be saved to the config file (" + SmugMug.smugmug_config + ") for later use.")
-    consumer_key = raw_input("Key: ")
-    consumer_secret = raw_input("Secret: ")
-
-    write_config(SmugMug.smugmug_config, [("username", username), ("consumer_key", consumer_key), ("consumer_secret", consumer_secret), ("access_token", ''), ("access_token_secret", '')])
-
-    smugmug = SmugMug()
-    authorize_url = smugmug.get_authorize_url()
-    print("## Step 2: Visit this address in your browser to authenticate your new keys for access your SmugMug account: \n## " + authorize_url)
-    print("## After that, enter the 6-digit key that SmugMug provided")
-    verifier = raw_input("6-digit key: ")
-
-    access_token, access_token_secret = smugmug.get_access_token(verifier)
-
-    write_config(SmugMug.smugmug_config, [("username", username), ("consumer_key", consumer_key), ("consumer_secret", consumer_secret), ("access_token", access_token), ("access_token_secret", access_token_secret)])
-
-    print("## Great! All done!")
