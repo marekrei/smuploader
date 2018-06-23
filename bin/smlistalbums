@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+from smuploader import SmugMug
+import argparse, sys, os, hashlib
+
+def list_albums(verbose):
+    """
+    Download all albums in an account
+    """
+    smugmug = SmugMug(verbose)
+
+    album_names = []
+
+    albums = smugmug.get_album_names()
+    for album_name in albums:
+        print(album_name)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Download images from SmugMug.')
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true', default=False, help='verbose output')
+    args = parser.parse_args()
+
+    list_albums(verbose = args.verbose)
+
