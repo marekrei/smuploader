@@ -223,7 +223,11 @@ class SmugMug(object):
         if self.verbose == True:
             print(json.dumps(response))
 
-        return response
+        album_key = None
+        if "Response" in response and "Album" in response["Response"] and "AlbumKey" in response["Response"]["Album"]:
+            album_key = response["Response"]["Album"]["AlbumKey"]
+
+        return response, album_key
 
 
     def get_album_info(self, album_id):

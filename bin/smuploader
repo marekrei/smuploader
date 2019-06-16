@@ -2,6 +2,8 @@
 
 from smuploader import SmugMug
 import argparse, sys, os, mimetypes
+import time
+import json
 
 def upload_images(album_name, folder_name, template_name, password, resume, verbose, image_paths):
     if album_name == None:
@@ -32,9 +34,8 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
                 print 'Error: Could not find album template named \'' + template_name + '\''
                 sys.exit(1)
         # Creating a new album
-        smugmug.create_album(album_name = album_name, folder_id = folder_id, template_id = template_id, password = password)
-        print 'Created new album \''+album_name+'\''
-        album_id = smugmug.get_album_id(album_name)
+        response, album_id = smugmug.create_album(album_name = album_name, folder_id = folder_id, template_id = template_id, password = password)
+        print('Created new album \''+album_name+'\'')
     elif album_id != None and resume == True:
         print 'Uploading to existing album \'' + album_name + '\''
     else:
