@@ -92,7 +92,7 @@ class SmugMug(object):
                         data=data,
                         header_auth=header_auth)
         if self.verbose == True:
-            print('RESPONSE DATA:\n' + str(response.content)[:100] + (" ... " + str(response.content)[-100:] if len(str(response.content)) > 200 else ""))
+            print('RESPONSE DATA:\n' + str(response.content)[:2000] + (" ... " + str(response.content)[-2000:] if len(str(response.content)) > 2000 else ""))
         try:
             data = json.loads(response.content)
         except Exception:
@@ -110,9 +110,9 @@ class SmugMug(object):
                     return response
             except (requests.ConnectionError, requests.HTTPError, requests.URLRequired, requests.TooManyRedirects, requests.RequestException, httplib.IncompleteRead) as e:
                 if self.verbose == True:
-                    print sys.exc_info()[0]
+                    print(sys.exc_info()[0])
             if self.verbose == True:
-                print 'Retrying (' + str(retry_count) + ')...'
+                print('Retrying (' + str(retry_count) + ')...')
             time.sleep(sleep)
             retry_count -= 1
         print('Error: Too many retries, giving up.')
@@ -125,11 +125,11 @@ class SmugMug(object):
         Get a list of all albums in the account
         """
         albums = []
-        start = 1
-        stepsize = 500
+        start = 0
+        stepsize = 100
         while(True):
             params = {'start': start, 'count': stepsize}
-            response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json'})
+            response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json', 'Cache-Control': 'no-cache'})
 
             for album in response['Response']['Album'] :
                 albums.append({"Title": album['Title'], "Uri": album["Uri"], "AlbumKey": album["AlbumKey"]})
@@ -221,7 +221,7 @@ class SmugMug(object):
             response = self.request('POST', self.smugmug_api_base_url + "/folder/user/"+self.username + ("/"+folder_id if folder_id != None else "") + "!albums", data=json.dumps(data), headers={'Accept': 'application/json', 'Content-Type': 'application/json'})
 
         if self.verbose == True:
-            print json.dumps(response)
+            print(json.dumps(response))
 
         return response
 

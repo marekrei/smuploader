@@ -47,6 +47,10 @@ class TestSmugMug(unittest.TestCase):
         # Creating a new album
         smugmug.create_album(album_name, folder_id=folder_id, template_id=template_id, password=password)
 
+        # Have to wait a bit (a lot)
+        print("Waiting 60 seconds...")
+        time.sleep(60)
+
         # Checking that the album was created
         album_names = smugmug.get_album_names()
         self.assertTrue(album_name in album_names)
@@ -84,6 +88,7 @@ class TestSmugMug(unittest.TestCase):
         self.assertTrue(len(album_images) == 1)
 
         # Have to wait a bit
+        print("Waiting 20 seconds...")
         time.sleep(20)
 
         # Dowloading the image
