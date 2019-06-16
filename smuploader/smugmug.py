@@ -1,16 +1,20 @@
 from rauth.service import OAuth1Service
 import requests
-import httplib
-import httplib2
+import http.client
 import hashlib
 import urllib
 import time
 import sys
 import os
 import json
-import ConfigParser
 import re
 import shutil
+from past.builtins import basestring
+
+try:
+    import ConfigParser as configparser
+except:
+    import configparser
 
 class SmugMug(object):
     smugmug_api_base_url = 'https://api.smugmug.com/api/v2'
@@ -32,7 +36,7 @@ class SmugMug(object):
 
         self.verbose = verbose
         
-        config_parser = ConfigParser.RawConfigParser()
+        config_parser = configparser.RawConfigParser()
         config_parser.read(SmugMug.smugmug_config)
         try:
             self.username = config_parser.get('SMUGMUG','username')
@@ -57,7 +61,11 @@ class SmugMug(object):
     @staticmethod
     def decode(obj, encoding='utf-8'):
         if isinstance(obj, basestring):
-            if not isinstance(obj, unicode):
+            try:
+                is_unicode = isinstance(obj, unicode)
+            except Exception:
+                is_unicode = True
+            if not is_unicode:
                 obj = unicode(obj, encoding)
         return obj
 
@@ -108,7 +116,7 @@ class SmugMug(object):
                 response = self.request_once(method, url, params, headers, files, data, header_auth)
                 if ('Code' in response and response['Code'] in [200, 201]) or ("stat" in response and response["stat"] in ["ok"]):
                     return response
-            except (requests.ConnectionError, requests.HTTPError, requests.URLRequired, requests.TooManyRedirects, requests.RequestException, httplib.IncompleteRead) as e:
+            except (requests.ConnectionError, requests.HTTPError, requests.URLRequired, requests.TooManyRedirects, requests.RequestException, http.client.IncompleteRead) as e:
                 if self.verbose == True:
                     print(sys.exc_info()[0])
             if self.verbose == True:
@@ -317,7 +325,7 @@ class SmugMug(object):
                 'X-Smug-ResponseType':'JSON',
                 'Content-MD5': hashlib.md5(image_data).hexdigest(),
                 'X-Smug-FileName':image_name,
-                'Content-Length' : str(len(image_data)),
+                'Content-Length' : len(image_data),
                 'Content-Type': image_type})
         return response
 
