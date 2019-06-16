@@ -80,6 +80,7 @@ def upload_images(album_name, folder_name, template_name, password, resume, verb
                 print result
                 sys.exit(1)
             print 'Done'
+            print("Image URL: %s" % (result[u'Image'][u'URL']))
 
     # Small additional check if the number of images matches
     album_images = smugmug.get_album_images(album_id)
