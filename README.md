@@ -11,16 +11,13 @@ The following python modules need to be installed:
 
 * requests [http://docs.python-requests.org]
 * rauth [https://github.com/litl/rauth]
+* httplib2 
 
-You can install them using
+You can install the dependencies:
 
-	pip install rauth
+	pip install rauth httplib2
 
-You can install this as:
-    
-	pip install smuploader
-	
-or locally:
+You can install Smuploader:
 
     git clone https://github.com/marekrei/smuploader.git
 	cd smuploader
