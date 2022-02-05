@@ -1,14 +1,12 @@
 from rauth.service import OAuth1Service
 import requests
-import httplib
 import httplib2
 import hashlib
-import urllib
 import time
 import sys
 import os
 import json
-import ConfigParser
+import configparser
 import re
 import shutil
 
@@ -32,7 +30,7 @@ class SmugMug(object):
 
         self.verbose = verbose
         
-        config_parser = ConfigParser.RawConfigParser()
+        config_parser = configparser.ConfigParser()
         config_parser.read(SmugMug.smugmug_config)
         try:
             self.username = config_parser.get('SMUGMUG','username')
@@ -92,7 +90,7 @@ class SmugMug(object):
                         data=data,
                         header_auth=header_auth)
         if self.verbose == True:
-            print('RESPONSE DATA:\n' + str(response.content)[:2000] + (" ... " + str(response.content)[-2000:] if len(str(response.content)) > 2000 else ""))
+            print('RESPONSE DATA:\n' + str(response.content)[:100] + (" ... " + str(response.content)[-100:] if len(str(response.content)) > 200 else ""))
         try:
             data = json.loads(response.content)
         except Exception:
@@ -108,7 +106,7 @@ class SmugMug(object):
                 response = self.request_once(method, url, params, headers, files, data, header_auth)
                 if ('Code' in response and response['Code'] in [200, 201]) or ("stat" in response and response["stat"] in ["ok"]):
                     return response
-            except (requests.ConnectionError, requests.HTTPError, requests.URLRequired, requests.TooManyRedirects, requests.RequestException, httplib.IncompleteRead) as e:
+            except (requests.ConnectionError, requests.HTTPError, requests.URLRequired, requests.TooManyRedirects, requests.RequestException, httplib2.IncompleteRead) as e:
                 if self.verbose == True:
                     print(sys.exc_info()[0])
             if self.verbose == True:
@@ -125,18 +123,20 @@ class SmugMug(object):
         Get a list of all albums in the account
         """
         albums = []
-        start = 0
-        stepsize = 100
+        start = 1
+        stepsize = 500
         while(True):
             params = {'start': start, 'count': stepsize}
-            response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json', 'Cache-Control': 'no-cache'})
+            response = self.request('GET', self.smugmug_api_base_url + "/user/"+self.username+"!albums", params=params, headers={'Accept': 'application/json'})
+            try:
+                for album in response['Response']['Album'] :
+                    albums.append({"Title": album['Title'], "Uri": album["Uri"], "AlbumKey": album["AlbumKey"], "Category": album["UrlPath"].split("/")[1]})
 
-            for album in response['Response']['Album'] :
-                albums.append({"Title": album['Title'], "Uri": album["Uri"], "AlbumKey": album["AlbumKey"]})
-
-            if 'NextPage' in response['Response']['Pages']:
-                start += stepsize
-            else:
+                if 'NextPage' in response['Response']['Pages']:
+                    start += stepsize
+                else:
+                    break
+            except KeyError:
                 break
         return albums
 
@@ -179,7 +179,8 @@ class SmugMug(object):
             response = self.request('GET', self.smugmug_api_base_url + "/album/"+album_id+"!images", params=params, headers={'Accept': 'application/json'})
 
             for image in (response['Response']['AlbumImage'] if 'AlbumImage' in response['Response'] else []):
-                images.append({"ImageKey": image['ImageKey'], "Uri": image["Uri"], "FileName": image["FileName"], "ArchivedMD5": image["ArchivedMD5"], "OriginalSize": (image["OriginalSize"] if "OriginalSize" in image else None)})
+                #print(json.dumps(image, indent=2))
+                images.append({"ImageKey": image['ImageKey'], "Uri": image["Uri"], "FileName": image["FileName"], "ArchivedMD5": image["ArchivedMD5"], "ArchivedSize": image["ArchivedSize"]})
 
             if 'NextPage' in response['Response']['Pages']:
                 start += stepsize
@@ -223,11 +224,7 @@ class SmugMug(object):
         if self.verbose == True:
             print(json.dumps(response))
 
-        album_key = None
-        if "Response" in response and "Album" in response["Response"] and "AlbumKey" in response["Response"]["Album"]:
-            album_key = response["Response"]["Album"]["AlbumKey"]
-
-        return response, album_key
+        return response
 
 
     def get_album_info(self, album_id):
@@ -348,7 +345,7 @@ class SmugMug(object):
             image_size = str(len(image_data_local))
             if image_md5sum != image_info['ArchivedMD5']:
                 raise Exception("MD5 sum doesn't match.")
-            elif image_info['OriginalSize'] is not None and image_size != str(image_info['OriginalSize']):
+            elif image_size != str(image_info['ArchivedSize']):
                 raise Exception("Image size doesn't match.")
             else:
                 os.rename(image_path_temp, image_path)
